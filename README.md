@@ -26,4 +26,4 @@ The result is a small data structure (a packed array of displacement values) tha
 
 ## Usage Example (C)
 
-[examples](exmaples/)
+[examples](examples/)
