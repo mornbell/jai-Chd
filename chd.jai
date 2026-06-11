@@ -13,14 +13,14 @@ Chd::struct(N:s64){
         start:s64;
         len:s64;
     };
-    sigmas:[BUCKET_COUNT]u64;
+    seeds:[BUCKET_COUNT]u64;
     hashed_key_index:[N]s64; // ith key's index
 }
 
 // perfect hash function params
 Hash_State::struct(N:s64){
     hash_key:u64;
-    sigmas:[#run bucket_count(N)]u64;
+    seeds:[#run bucket_count(N)]u64;
     hashed_key_index:[N]s64;
 }
 
@@ -32,7 +32,7 @@ build::(using chd:*Chd(N),keys:[$N]$K)->Hash_State(N)
         split_into_buckets(chd,keys);
         quick_sort(buckets,(a,b)=>b.len-a.len);
         if displace(chd){
-            return .{ hash_key,sigmas, hashed_key_index};
+            return .{ hash_key,seeds, hashed_key_index};
         }
         memset(chd,0,size_of(Chd(N)));
     }
@@ -122,7 +122,7 @@ displace::(using chd:*Chd($N))->bool{
                 if key_index==EMPTY_SLOT continue;
                 hashed_key_index[index]=key_index;
             }
-            sigmas[bucket.index]=pilot;
+            seeds[bucket.index]=pilot;
             continue bucket;
         }
         // failed to find perfect hash function
@@ -131,13 +131,14 @@ displace::(using chd:*Chd($N))->bool{
     return true;
 }
 
+// TODO
 compress::(chd:*Chd){
    // 计算最大的sigma的bit位数n,使用n-bit存储，共占用n*bucket_count bit.
 }
 
 
 EMPTY_SLOT:s64:0xffff_ffff_ffff_ffff;
-DEFAULT_LAMBDA: s64 : 3; //average bucket size
+DEFAULT_LAMBDA: s64 : 3; // average bucket size
 
 cnt:u64=0;
 random::()->u64{

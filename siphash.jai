@@ -41,7 +41,7 @@ hash::(h:*SipHash,x:$X)->U128
 	return info.type == .INTEGER;
 }
 {
-    write_int(h, X ,x);
+    write_integer(h, X ,x);
     return finish(h);
 }
 
@@ -93,21 +93,21 @@ finish::(using h:*SipHash)->U128{
     return .{high=v0^v1,low=v2^v3};
 }
 
-write_int::(h:*SipHash,$T:Type,i:T){
+write_integer::(h:*SipHash,$T:Type,i:T){
     bytes:[size_of(T)]u8;
     memcpy(bytes.data,*i,size_of(T));
     write(h,bytes);
 }
 
-write_u8::#bake_arguments write_int(T=u8);
-write_s8::#bake_arguments write_int(T=s8);
-write_u16::#bake_arguments write_int(T=u16);
-write_s16::#bake_arguments write_int(T=s16);
-write_u32::#bake_arguments write_int(T=u32);
-write_s32::#bake_arguments write_int(T=s32);
-write_u64::#bake_arguments write_int(T=u64);
-write_s64::#bake_arguments write_int(T=s64);
-write_int::#bake_arguments write_int(T=int);
+write_u8::#bake_arguments write_integer(T=u8);
+write_s8::#bake_arguments write_integer(T=s8);
+write_u16::#bake_arguments write_integer(T=u16);
+write_s16::#bake_arguments write_integer(T=s16);
+write_u32::#bake_arguments write_integer(T=u32);
+write_s32::#bake_arguments write_integer(T=s32);
+write_u64::#bake_arguments write_integer(T=u64);
+write_s64::#bake_arguments write_integer(T=s64);
+write_int::#bake_arguments write_integer(T=int);
 
 write_str::(h:*SipHash,s:string){
     write(h,cast([]u8,s));
