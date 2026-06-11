@@ -27,8 +27,9 @@ Hash_State::struct(N:s64){
 build::(using chd:*Chd(N),keys:[$N]$K)->Hash_State(N)
 {
     #if DEBUG check_duplicate(keys);
+    rng:Rng=init(FIXED_SEED);
     while true{
-        hash_key=random();
+        hash_key=random(*rng);
         split_into_buckets(chd,keys);
         quick_sort(buckets,(a,b)=>b.len-a.len);
         if displace(chd){
@@ -64,7 +65,6 @@ hash::(x:$X,k:u64)->Hash{
 check_duplicate::(keys:[$N]$K){
     for i:0..N-1 for j:i+1..N-1{
         if keys[i]==keys[j] {
-            print("Duplicate key '%' found at index % and %.\n",keys[i],i,j);
             exit(1);
         }
     }
@@ -75,7 +75,6 @@ split_into_buckets::(using chd:*Chd(N),keys:[$N]$K){
     for key,index:keys{
         hashes[index]=hash(key,hash_key);
     }
-
     // caculate bucket length, so we can caculate bucket[i].start=sum(bucket[0].len+...bucket[i-1].len)
     counter:[BUCKET_COUNT]s64;
     for hash:hashes{
@@ -137,15 +136,11 @@ compress::(chd:*Chd){
 }
 
 
-EMPTY_SLOT:s64:0xffff_ffff_ffff_ffff;
-DEFAULT_LAMBDA: s64 : 3; // average bucket size
-
-cnt:u64=0;
-random::()->u64{
-    cnt+=1;
-    return cnt;
-}
+EMPTY_SLOT : s64 : 0xffff_ffff_ffff_ffff;
+DEFAULT_LAMBDA : s64 : 3; // average bucket size
+FIXED_SEED : u64 : 1234567890;
 
 #import "Sort";
 #import "Basic";
 #import,file "siphash.jai";
+#import,file "random.jai"(DEBUG=true);
